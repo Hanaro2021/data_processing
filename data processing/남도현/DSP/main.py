@@ -1,7 +1,8 @@
 import pandas as pd
-import data
 import matplotlib.pyplot as plt
 import config
+import data
+from trajectories import IMUTrajectory, GPSTrajectory, SimpleTrajectory
 
 file_path = r"C:\Users\82108\Desktop\Hanaro\Data Processing\Data\identity3-B_lora_data.csv"
 fig_size = (10, 10)
@@ -16,7 +17,7 @@ if __name__ == '__main__':
     #     obj.altitude[config.index["launch"]:config.index["touchdown"]],
     # )
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=fig_size)
     ax = fig.add_subplot(111, projection='3d')
     obj.plot_kalman_trajectory(ax, color="red", label="Kalman")
     obj.plot_gps_trajectory(ax, color="green", label="GPS")
