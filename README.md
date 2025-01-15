@@ -7,45 +7,57 @@ This project processes and visualizes IMU (Inertial Measurement Unit), GPS, and 
 ```mermaid
 graph TD
     subgraph Main Flow
-        A[main.py] --> B[data.py: data_format]
+        A[main.py] --> |Initializes| B[data.data_format]
         B --> C[Set Initial Conditions]
         C --> D[Extended Kalman Filter]
-        D --> E[Plot Trajectories]
+        D --> E[Plot Multiple Trajectories]
     end
 
-    subgraph Data Processing
-        B --> F[Read CSV Data]
-        F --> G[Process IMU Data]
-        F --> H[Process GPS Data]
-        F --> I[Process Pressure Data]
+    subgraph Data Processing Layer
+        B --> F[data.py]
+        F --> G[Process Sensor Data]
+        F --> H[Identify Flight States]
+        F --> I[Extended Kalman Filter]
     end
 
-    subgraph Trajectory Classes
-        J[IMUTrajectory] --> K[Calculate IMU-based Path]
-        L[GPSTrajectory] --> M[Calculate GPS-based Path]
-        N[SimpleTrajectory] --> O[Calculate Simple Path]
+    subgraph Trajectory Package
+        J[trajectories/__init__.py] --> K[IMUTrajectory]
+        J --> L[GPSTrajectory]
+        J --> M[SIMPLETrajectory]
+        
+        subgraph IMU Processing
+            K --> N[RK4 Integration]
+            K --> O[Quaternion Rotation]
+        end
+        
+        subgraph GPS Processing
+            L --> P[Haversine Formula]
+            L --> Q[Coordinate Transform]
+        end
+        
+        subgraph Simple Processing
+            M --> |Inherits|K
+            M --> R[Gyroscope Integration]
+        end
     end
 
-    subgraph Configuration
-        P[config.py] --> Q[Flight States]
-        P --> R[Plot Settings]
+    subgraph Support Modules
+        S[quaternion.py] --> |Provides|T[Quaternion Math]
+        U[config.py] --> |Configures|V[Flight States]
+        U --> |Defines|W[Plot Settings]
     end
 
     E --> J
-    E --> L
-    E --> N
-    Q --> B
-    R --> E
+    T --> O
+    V --> B
+    W --> E
 ```
 
-- Main Flow(`main.py`): 
-  - Entry point of the application
-  - Creates a data_format object
-  - Initializes conditions and runs EKF (Extended Kalman Filter)
-  - Sets up 3D plotting environment
-  - Plots three different trajectory calculations
-- Data Processing(`data.py`):
-  - `data_format` class: Core data processing class
+- Main Flow(`main.py`): Entry point
+  - Creates data_format object
+  - Processes flight data
+  - Generates 3D visualization of three trajectory types
+- Data Processing Layer(`data.py`): Core data processing
   - Handles sensor data:
     - Accelerometer
     - Gyroscope
@@ -53,33 +65,34 @@ graph TD
     - GPS coordinates
     - Pressure/Altitude data
   - Implements quaternion-based rotation calculations
-    - `quaternion.py`: Quaternion mathematics utilities for 3D rotation calculations
   - Provides methods for initial condition setup and EKF processing
-- Trajectory Classes(`plot_trajectory.py`): Implements various trajectory estimation methods:
+- Trajectory Package(`trajectories/`): Implements various trajectory estimation methods:
   - `IMUTrajectory`: Calculates trajectory using IMU data
     - Uses RK4 integration
     - Handles acceleration transformation from body to observer frame
   - `GPSTrajectory`: Processes GPS-based trajectory
     - Uses haversine formula for coordinate conversion
-  - `SimpleTrajectory`: Calculates trajectory based on simple velocity integration
+  - `SimpleTrajectory`: Calculates trajectory based on simplified integration
     - Inherits from IMUTrajectory
     - Uses gyroscope data for rotation
-- Configuration(`config.py`): 
-  - Stores global configuration
-  - Defines flight states:
-    - stand_by
-    - launch
-    - apogee
-    - drogue
-    - main
-    - touchdown
-  - Contains plotting parameters
-  - Defines physical constants
+- Support Modules
+  - `quaternion.py`: Quaternion mathematics utilities
+  - `config.py`: Configuration parameters
+    - Stores global configuration
+    - Defines flight states:
+      - stand_by
+      - launch
+      - apogee
+      - drogue
+      - main
+      - touchdown
+    - Contains plotting parameters
+    - Defines physical constants
 
 ## Usage
 `main.py` 스크립트를 실행하면 IMU, GPS, 그리고 기압 센서 데이터를 기록한 CSV 파일을 처리하여 비행 궤적을 구하고, 다음의 세 가지 방식으로 추정한 경로를 각각 시각화하여 나타냅니다.  
 The main script processes data from a CSV file containing IMU, GPS, and pressure sensor readings. It visualizes three different trajectory estimates:
-- Kalman filter-based trajectory (red)
+- Kalman filter-based IMUtrajectory (red)
 - GPS-based trajectory (green)
 - Simple integration-based trajectory estimation (blue)
 
