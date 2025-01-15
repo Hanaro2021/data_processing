@@ -178,6 +178,7 @@ class data_format:
             i -= 1
         config.index["touchdown"] = i
         print(config.index)
+        
     def set_initial_condition(self):
         self.find_index()
         gx0 = self.acc['x'][config.index["stand by"]:config.index["launch"]].mean()
