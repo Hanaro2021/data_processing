@@ -1,9 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import config
 import data
-from trajectories import IMUTrajectory, GPSTrajectory, SimpleTrajectory
-import os
+from trajectories import *
 
 file_path = "./input_data/identity3-B_lora_data.csv"
 fig_size = (10, 10)

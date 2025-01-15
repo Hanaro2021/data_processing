@@ -4,7 +4,7 @@ from quaternion import *
 import matplotlib.pyplot as plt
 import config
 import os
-import plot_trajectory as trajectory
+from trajectories import *
 
 # multiplying two quaternions: 
 # pq == matrix_left(p) @ q == matrix_right(q) @ p
@@ -313,13 +313,13 @@ class data_format:
         plt.show()
 
     def plot_kalman_trajectory(self, ax, color=None, label=None):
-        imu_trajectory = trajectory.IMUTrajectory(rotator=self.rotator, direction=self.rotator_direction, acc=self.acc, dt=self.dt, gravity=self.g0)
+        imu_trajectory = IMUTrajectory(rotator=self.rotator, direction=self.rotator_direction, acc=self.acc, dt=self.dt, gravity=self.g0)
         imu_trajectory.calculate_trajectory(config.index["launch"], config.index["touchdown"])
         imu_trajectory.plot_trajectory(ax, color, label)
         # rocket.animate_trajectory()
 
     def plot_gps_trajectory(self, ax, color=None, label=None):
-        gps_trajectory = trajectory.GPSTrajectory(latitude=self.latitude, longitude=self.longitude,
+        gps_trajectory = GPSTrajectory(latitude=self.latitude, longitude=self.longitude,
                                                   altitude=self.altitude)
         gps_trajectory.calculate_trajectory()
         gps_trajectory.plot_trajectory(ax, color, label)
@@ -338,7 +338,7 @@ class data_format:
 
     def plot_simple_trajectory(self, ax, color=None, label=None):
         simple_trajectory \
-            = trajectory.SIMPLETrajectory(acc=self.acc, dt=self.dt, gravity=self.g0, gyro=self.gyro,
+            = SIMPLETrajectory(acc=self.acc, dt=self.dt, gravity=self.g0, gyro=self.gyro,
                                           rotator0=self.rotator[config.index["launch"]], direction=self.rotator_direction)
         simple_trajectory.calculate_trajectory(config.index["launch"], config.index["touchdown"])
         simple_trajectory.plot_trajectory(ax, color, label)
